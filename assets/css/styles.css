@@ -8,12 +8,104 @@ body {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+:root {
+    --card-bg: #f8fafc;
+    --card-border: #f1f5f9;
+    --card-hover-bg: #ffffff;
+    --card-hover-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
+    --card-text: #334155;
+    --card-label: #94a3b8;
+    --btn-text: #475569;
+    --btn-border: #f1f5f9;
+    --btn-hover-border: #c7d2fe;
+    --btn-active-bg: #0f172a;
+    --btn-active-text: #ffffff;
+    --btn-active-border: #0f172a;
+}
+
+html.dark {
+    --card-bg: #0f172a;
+    --card-border: #1e293b;
+    --card-hover-bg: #111c34;
+    --card-hover-shadow: 0 16px 30px rgba(2, 6, 23, 0.45);
+    --card-text: #e2e8f0;
+    --card-label: #94a3b8;
+    --btn-text: #e2e8f0;
+    --btn-border: #1e293b;
+    --btn-hover-border: #818cf8;
+    --btn-active-bg: #e2e8f0;
+    --btn-active-text: #0f172a;
+    --btn-active-border: #e2e8f0;
+}
+
 .color-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .harmony-btn {
     transition: all 0.2s ease;
+}
+
+.harmony-btn {
+    background: transparent;
+    border-color: var(--btn-border);
+    color: var(--btn-text);
+}
+
+.harmony-btn:hover {
+    border-color: var(--btn-hover-border);
+}
+
+.harmony-btn.is-active {
+    background: var(--btn-active-bg);
+    color: var(--btn-active-text);
+    border-color: var(--btn-active-border);
+}
+
+.harmony-btn.is-active:hover {
+    border-color: var(--btn-active-border);
+}
+
+.color-card:hover {
+    background: var(--card-hover-bg);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.color-card__swatch {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.12);
+    flex-shrink: 0;
+}
+
+.color-card__meta {
+    flex-grow: 1;
+}
+
+.color-card__label {
+    font-size: 0.625rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--card-label);
+}
+
+.color-card__value {
+    margin-top: 0.35rem;
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--card-text);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .wheel-container {

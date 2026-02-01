@@ -1,4 +1,4 @@
-const canvas = document.getElementById('colorWheel');
+﻿const canvas = document.getElementById('colorWheel');
 const ctx = canvas.getContext('2d');
 const colorsDisplay = document.getElementById('colorsDisplay');
 const harmonyTitle = document.getElementById('harmonyTitle');
@@ -18,13 +18,6 @@ const harmonyConfig = {
     tetradic: { name: 'Retângulo', offsets: [0, 60, 180, 240], type: 'poly' },
     square: { name: 'Quadrado', offsets: [0, 90, 180, 270], type: 'poly' }
 };
-
-const harmonyButtonBase = 'harmony-btn p-3 text-sm border-2 rounded-2xl font-bold transition-all';
-const harmonyButtonActive = `${harmonyButtonBase} bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100`;
-const harmonyButtonInactive = `${harmonyButtonBase} bg-transparent text-slate-600 border-slate-100 hover:border-indigo-200 dark:text-slate-300 dark:border-slate-700 dark:hover:border-indigo-400`;
-const cardClass = 'color-card group bg-slate-50 p-4 rounded-3xl border border-slate-100 flex items-center gap-4 hover:bg-white hover:shadow-md cursor-pointer dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800';
-const cardLabelClass = 'text-[10px] font-bold text-slate-400 uppercase tracking-widest dark:text-slate-400';
-const cardValueClass = 'text-lg font-mono font-black text-slate-700 dark:text-slate-100';
 
 const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)');
 
@@ -173,7 +166,7 @@ function updateUI(fromInput = false) {
     baseColorBadge.style.backgroundColor = `#${currentHex}`;
 
     document.querySelectorAll('.harmony-btn').forEach(btn => {
-        btn.className = btn.dataset.type === currentHarmony ? harmonyButtonActive : harmonyButtonInactive;
+        btn.classList.toggle('is-active', btn.dataset.type === currentHarmony);
     });
 
     colorsDisplay.innerHTML = '';
@@ -182,13 +175,13 @@ function updateUI(fromInput = false) {
         const hex = `#${hslToHex(h, 90, 50)}`;
 
         const card = document.createElement('div');
-        card.className = cardClass;
+        card.className = 'color-card';
         card.onclick = () => copyToClipboard(hex);
         card.innerHTML = `
-            <div class="w-14 h-14 rounded-2xl shadow-inner flex-shrink-0" style="background-color: ${hex}"></div>
-            <div class="flex-grow">
-                <div class="${cardLabelClass}">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
-                <div class="${cardValueClass}">${hex}</div>
+            <div class="color-card__swatch" style="background-color: ${hex}"></div>
+            <div class="color-card__meta">
+                <div class="color-card__label">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
+                <div class="color-card__value">${hex}</div>
             </div>
         `;
         colorsDisplay.appendChild(card);
@@ -255,3 +248,4 @@ function copyToClipboard(text) {
 }
 
 window.onload = updateUI;
+

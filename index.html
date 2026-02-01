@@ -16,8 +16,8 @@
 <body class="bg-slate-50 min-h-screen text-slate-800 font-sans transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
 
     <div class="max-w-5xl mx-auto px-4 py-10">
-        <header class="mb-10">
-            <div class="flex justify-end">
+        <header class="mb-10 relative">
+            <div class="absolute right-0 top-0">
                 <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Alternar tema">
                     <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -33,7 +33,7 @@
                     <span class="theme-toggle__thumb" aria-hidden="true"></span>
                 </button>
             </div>
-            <div class="text-center mt-6">
+            <div class="text-center pt-6">
                 <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight dark:text-white">Esquemas de Cores</h1>
                 <p class="text-slate-500 max-w-lg mx-auto dark:text-slate-300">Escolha uma cor base ou digite o código HEX para ver as harmonias aplicadas.</p>
             </div>
@@ -89,4 +89,5 @@
     <script src="assets/js/script.js" defer></script>
 </body>
 </html>
+
 
