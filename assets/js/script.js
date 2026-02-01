@@ -5,6 +5,7 @@ const harmonyTitle = document.getElementById('harmonyTitle');
 const baseColorBadge = document.getElementById('baseColorBadge');
 const manualHexInput = document.getElementById('manualHexInput');
 const inputColorPreview = document.getElementById('inputColorPreview');
+const themeToggle = document.getElementById('themeToggle');
 
 let currentHue = 0;
 let currentHarmony = 'complementary';
@@ -17,6 +18,39 @@ const harmonyConfig = {
     tetradic: { name: 'Retângulo', offsets: [0, 60, 180, 240], type: 'poly' },
     square: { name: 'Quadrado', offsets: [0, 90, 180, 270], type: 'poly' }
 };
+
+const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)');
+
+function applyTheme(theme, persist = false) {
+    const root = document.documentElement;
+    const isDark = theme === 'dark';
+    root.classList.toggle('dark', isDark);
+    root.dataset.theme = theme;
+
+    if (themeToggle) {
+        themeToggle.innerText = isDark ? 'Modo claro' : 'Modo escuro';
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+    }
+
+    if (persist) {
+        localStorage.setItem('ui-theme', theme);
+    }
+}
+
+const storedTheme = localStorage.getItem('ui-theme');
+const initialTheme = storedTheme || (prefersDark?.matches ? 'dark' : 'light');
+applyTheme(initialTheme, Boolean(storedTheme));
+
+themeToggle?.addEventListener('click', () => {
+    const nextTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    applyTheme(nextTheme, true);
+});
+
+prefersDark?.addEventListener('change', (event) => {
+    if (!localStorage.getItem('ui-theme')) {
+        applyTheme(event.matches ? 'dark' : 'light');
+    }
+});
 
 function drawApp() {
     const centerX = canvas.width / 2;
@@ -61,50 +95,62 @@ function drawApp() {
         ctx.lineTo(points[1].x, points[1].y);
     } else {
         ctx.moveTo(points[0].x, points[0].y);
-        for(let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-        if(config.type === 'poly') ctx.closePath();
+        for (let i = 1; i < points.length; i += 1) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+        if (config.type === 'poly') ctx.closePath();
     }
     ctx.stroke();
 
     points.forEach((p, index) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = '#ffffff';
         ctx.fill();
         ctx.beginPath();
         ctx.arc(p.x, p.y, index === 0 ? 11 : 9, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${p.hue}, 100%, 50%)`;
         ctx.fill();
-        if(index === 0) { ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke(); }
+        if (index === 0) {
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
     });
 }
 
 function hslToHex(h, s, l) {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
+    const lValue = l / 100;
+    const a = (s * Math.min(lValue, 1 - lValue)) / 100;
     const f = n => {
         const k = (n + h / 30) % 12;
-        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        const color = lValue - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
         return Math.round(255 * color).toString(16).padStart(2, '0');
     };
     return `${f(0)}${f(8)}${f(4)}`.toUpperCase();
 }
 
 function hexToHue(hex) {
-    hex = hex.replace(/^#/, '');
-    if(hex.length === 3) hex = hex.split('').map(s => s + s).join('');
+    const sanitized = hex.replace(/^#/, '');
+    const normalized = sanitized.length === 3 ? sanitized.split('').map(s => s + s).join('') : sanitized;
 
-    let r = parseInt(hex.substring(0, 2), 16) / 255;
-    let g = parseInt(hex.substring(2, 4), 16) / 255;
-    let b = parseInt(hex.substring(4, 6), 16) / 255;
+    const r = parseInt(normalized.substring(0, 2), 16) / 255;
+    const g = parseInt(normalized.substring(2, 4), 16) / 255;
+    const b = parseInt(normalized.substring(4, 6), 16) / 255;
 
-    let max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
     let h;
 
-    if (max === min) h = 0;
-    else if (max === r) h = (g - b) / (max - min) + (g < b ? 6 : 0);
-    else if (max === g) h = (b - r) / (max - min) + 2;
-    else if (max === b) h = (r - g) / (max - min) + 4;
+    if (max === min) {
+        h = 0;
+    } else if (max === r) {
+        h = (g - b) / (max - min) + (g < b ? 6 : 0);
+    } else if (max === g) {
+        h = (b - r) / (max - min) + 2;
+    } else {
+        h = (r - g) / (max - min) + 4;
+    }
 
     return Math.round(h * 60);
 }
@@ -112,33 +158,31 @@ function hexToHue(hex) {
 function updateUI(fromInput = false) {
     const config = harmonyConfig[currentHarmony];
     harmonyTitle.innerText = config.name;
-
     const currentHex = hslToHex(currentHue, 100, 50);
 
     if (!fromInput) {
         manualHexInput.value = currentHex;
     }
-    inputColorPreview.style.backgroundColor = '#' + currentHex;
+    inputColorPreview.style.backgroundColor = `#${currentHex}`;
+    baseColorBadge.style.backgroundColor = `#${currentHex}`;
 
     document.querySelectorAll('.harmony-btn').forEach(btn => {
-        btn.className = `harmony-btn p-3 text-sm border-2 rounded-2xl font-bold transition-all ${btn.dataset.type === currentHarmony ? 'bg-slate-900 text-white border-slate-900' : 'bg-transparent text-slate-600 border-slate-100 hover:border-indigo-200'}`;
+        btn.classList.toggle('is-active', btn.dataset.type === currentHarmony);
     });
-
-    baseColorBadge.style.backgroundColor = '#' + currentHex;
 
     colorsDisplay.innerHTML = '';
     config.offsets.forEach((offset, idx) => {
         const h = (currentHue + offset + 360) % 360;
-        const hex = '#' + hslToHex(h, 90, 50);
+        const hex = `#${hslToHex(h, 90, 50)}`;
 
         const card = document.createElement('div');
-        card.className = 'color-card group bg-slate-50 p-4 rounded-3xl border border-slate-100 flex items-center gap-4 hover:bg-white hover:shadow-md cursor-pointer';
+        card.className = 'color-card';
         card.onclick = () => copyToClipboard(hex);
         card.innerHTML = `
-            <div class="w-14 h-14 rounded-2xl shadow-inner flex-shrink-0" style="background-color: ${hex}"></div>
-            <div class="flex-grow">
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
-                <div class="text-lg font-mono font-black text-slate-700">${hex}</div>
+            <div class="color-swatch" style="background-color: ${hex}"></div>
+            <div class="color-meta">
+                <div class="color-meta__label">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
+                <div class="color-meta__value">${hex}</div>
             </div>
         `;
         colorsDisplay.appendChild(card);
@@ -147,12 +191,12 @@ function updateUI(fromInput = false) {
     drawApp();
 }
 
-manualHexInput.addEventListener('input', (e) => {
-    let val = e.target.value.replace(/[^0-9A-Fa-f]/g, '');
-    e.target.value = val;
+manualHexInput.addEventListener('input', (event) => {
+    const inputValue = event.target.value.replace(/[^0-9A-Fa-f]/g, '');
+    event.target.value = inputValue;
 
-    if (val.length === 3 || val.length === 6) {
-        currentHue = hexToHue(val);
+    if (inputValue.length === 3 || inputValue.length === 6) {
+        currentHue = hexToHue(inputValue);
         updateUI(true);
     }
 });
@@ -162,10 +206,10 @@ function setHarmony(type) {
     updateUI();
 }
 
-function handleInput(e) {
+function handleInput(event) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.clientX || e.touches?.[0]?.clientX;
-    const clientY = e.clientY || e.touches?.[0]?.clientY;
+    const clientX = event.clientX || event.touches?.[0]?.clientX;
+    const clientY = event.clientY || event.touches?.[0]?.clientY;
     const x = clientX - rect.left;
     const y = clientY - rect.top;
     const centerX = rect.width / 2;
@@ -175,13 +219,19 @@ function handleInput(e) {
     updateUI();
 }
 
-canvas.addEventListener('mousedown', (e) => {
-    handleInput(e);
+canvas.addEventListener('mousedown', (event) => {
+    handleInput(event);
     window.addEventListener('mousemove', handleInput);
 });
 window.addEventListener('mouseup', () => window.removeEventListener('mousemove', handleInput));
-canvas.addEventListener('touchstart', (e) => { handleInput(e); e.preventDefault(); }, { passive: false });
-canvas.addEventListener('touchmove', (e) => { handleInput(e); e.preventDefault(); }, { passive: false });
+canvas.addEventListener('touchstart', (event) => {
+    handleInput(event);
+    event.preventDefault();
+}, { passive: false });
+canvas.addEventListener('touchmove', (event) => {
+    handleInput(event);
+    event.preventDefault();
+}, { passive: false });
 
 function copyToClipboard(text) {
     const el = document.createElement('textarea');
@@ -192,7 +242,7 @@ function copyToClipboard(text) {
     document.body.removeChild(el);
 
     const toast = document.createElement('div');
-    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold';
+    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold toast';
     toast.innerText = `Copiado: ${text}`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 1500);
