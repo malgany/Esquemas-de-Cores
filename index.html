@@ -1,25 +1,45 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harmonia de Cores Visual</title>
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body class="min-h-screen font-sans transition-all">
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
 
     <div class="max-w-5xl mx-auto px-4 py-10">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight dark:text-white">Esquemas de Cores</h1>
-            <p class="text-slate-500 max-w-lg mx-auto dark:text-slate-300">Escolha uma cor base ou digite o código HEX para ver as harmonias aplicadas.</p>
-            <div class="mt-6 flex justify-center gap-2">
-                <button id="themeToggle" class="theme-toggle" aria-pressed="false">Modo escuro</button>
+        <header class="mb-10">
+            <div class="flex justify-end">
+                <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Alternar tema">
+                    <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                        </svg>
+                    </span>
+                    <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+                        </svg>
+                    </span>
+                    <span class="theme-toggle__thumb" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="text-center mt-6">
+                <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight dark:text-white">Esquemas de Cores</h1>
+                <p class="text-slate-500 max-w-lg mx-auto dark:text-slate-300">Escolha uma cor base ou digite o código HEX para ver as harmonias aplicadas.</p>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div class="lg:col-span-5 panel-card p-6 flex flex-col items-center">
+            <div class="lg:col-span-5 bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col items-center dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl">
                 <div class="wheel-container mb-6">
                     <canvas id="colorWheel" width="800" height="800" class="w-full h-full shadow-inner"></canvas>
                 </div>
@@ -48,13 +68,13 @@
             </div>
 
             <div class="lg:col-span-7 flex flex-col gap-6">
-                <div class="panel-card p-8 h-full">
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border border-slate-100 h-full dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl">
                     <div class="flex items-center justify-between mb-8">
                         <div>
                             <h2 id="harmonyTitle" class="text-2xl font-black text-slate-900 capitalize dark:text-white">Complementares</h2>
                             <p class="text-slate-400 text-sm dark:text-slate-400">Harmonias sugeridas</p>
                         </div>
-                        <div id="baseColorBadge" class="w-12 h-12 rounded-2xl shadow-md border-4"></div>
+                        <div id="baseColorBadge" class="w-12 h-12 rounded-2xl shadow-md border-4 border-white dark:border-slate-900"></div>
                     </div>
 
                     <div id="colorsDisplay" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -68,3 +88,4 @@
     <script src="assets/js/script.js" defer></script>
 </body>
 </html>
+

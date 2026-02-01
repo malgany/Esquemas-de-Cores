@@ -19,17 +19,23 @@ const harmonyConfig = {
     square: { name: 'Quadrado', offsets: [0, 90, 180, 270], type: 'poly' }
 };
 
+const harmonyButtonBase = 'harmony-btn p-3 text-sm border-2 rounded-2xl font-bold transition-all';
+const harmonyButtonActive = `${harmonyButtonBase} bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100`;
+const harmonyButtonInactive = `${harmonyButtonBase} bg-transparent text-slate-600 border-slate-100 hover:border-indigo-200 dark:text-slate-300 dark:border-slate-700 dark:hover:border-indigo-400`;
+const cardClass = 'color-card group bg-slate-50 p-4 rounded-3xl border border-slate-100 flex items-center gap-4 hover:bg-white hover:shadow-md cursor-pointer dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800';
+const cardLabelClass = 'text-[10px] font-bold text-slate-400 uppercase tracking-widest dark:text-slate-400';
+const cardValueClass = 'text-lg font-mono font-black text-slate-700 dark:text-slate-100';
+
 const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)');
 
 function applyTheme(theme, persist = false) {
     const root = document.documentElement;
     const isDark = theme === 'dark';
     root.classList.toggle('dark', isDark);
-    root.dataset.theme = theme;
 
     if (themeToggle) {
-        themeToggle.innerText = isDark ? 'Modo claro' : 'Modo escuro';
         themeToggle.setAttribute('aria-pressed', String(isDark));
+        themeToggle.setAttribute('title', isDark ? 'Modo claro' : 'Modo escuro');
     }
 
     if (persist) {
@@ -60,7 +66,7 @@ function drawApp() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (let angle = 0; angle < 360; angle++) {
+    for (let angle = 0; angle < 360; angle += 1) {
         const startAngle = (angle - 1) * Math.PI / 180;
         const endAngle = (angle + 1) * Math.PI / 180;
         ctx.beginPath();
@@ -167,7 +173,7 @@ function updateUI(fromInput = false) {
     baseColorBadge.style.backgroundColor = `#${currentHex}`;
 
     document.querySelectorAll('.harmony-btn').forEach(btn => {
-        btn.classList.toggle('is-active', btn.dataset.type === currentHarmony);
+        btn.className = btn.dataset.type === currentHarmony ? harmonyButtonActive : harmonyButtonInactive;
     });
 
     colorsDisplay.innerHTML = '';
@@ -176,13 +182,13 @@ function updateUI(fromInput = false) {
         const hex = `#${hslToHex(h, 90, 50)}`;
 
         const card = document.createElement('div');
-        card.className = 'color-card';
+        card.className = cardClass;
         card.onclick = () => copyToClipboard(hex);
         card.innerHTML = `
-            <div class="color-swatch" style="background-color: ${hex}"></div>
-            <div class="color-meta">
-                <div class="color-meta__label">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
-                <div class="color-meta__value">${hex}</div>
+            <div class="w-14 h-14 rounded-2xl shadow-inner flex-shrink-0" style="background-color: ${hex}"></div>
+            <div class="flex-grow">
+                <div class="${cardLabelClass}">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
+                <div class="${cardValueClass}">${hex}</div>
             </div>
         `;
         colorsDisplay.appendChild(card);
@@ -242,7 +248,7 @@ function copyToClipboard(text) {
     document.body.removeChild(el);
 
     const toast = document.createElement('div');
-    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold toast';
+    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold';
     toast.innerText = `Copiado: ${text}`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 1500);
