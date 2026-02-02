@@ -6,9 +6,12 @@ const baseColorBadge = document.getElementById('baseColorBadge');
 const manualHexInput = document.getElementById('manualHexInput');
 const inputColorPreview = document.getElementById('inputColorPreview');
 const themeToggle = document.getElementById('themeToggle');
+const lightnessSlider = document.getElementById('lightnessSlider');
+const lightnessValue = document.getElementById('lightnessValue');
 
 let currentHue = 0;
 let currentHarmony = 'complementary';
+let currentLightness = 50;
 
 const harmonyConfig = {
     complementary: { name: 'Complementares', offsets: [0, 180], type: 'line' },
@@ -118,7 +121,7 @@ function drawApp() {
         ctx.fill();
         ctx.beginPath();
         ctx.arc(p.x, p.y, index === 0 ? 11 : 9, 0, Math.PI * 2);
-        ctx.fillStyle = `hsl(${p.hue}, 100%, 50%)`;
+        ctx.fillStyle = `hsl(${p.hue}, 100%, ${currentLightness}%)`;
         ctx.fill();
         if (index === 0) {
             ctx.strokeStyle = '#000';
@@ -167,7 +170,7 @@ function hexToHue(hex) {
 function updateUI(fromInput = false) {
     const config = harmonyConfig[currentHarmony];
     harmonyTitle.innerText = config.name;
-    const currentHex = hslToHex(currentHue, 100, 50);
+    const currentHex = hslToHex(currentHue, 100, currentLightness);
 
     if (!fromInput) {
         manualHexInput.value = currentHex;
@@ -182,7 +185,7 @@ function updateUI(fromInput = false) {
     colorsDisplay.innerHTML = '';
     config.offsets.forEach((offset, idx) => {
         const h = (currentHue + offset + 360) % 360;
-        const hexWithoutHash = hslToHex(h, 90, 50);
+        const hexWithoutHash = hslToHex(h, 90, currentLightness);
         const hex = `#${hexWithoutHash}`;
 
         const card = document.createElement('div');
@@ -209,6 +212,12 @@ manualHexInput.addEventListener('input', (event) => {
         currentHue = hexToHue(inputValue);
         updateUI(true);
     }
+});
+
+lightnessSlider.addEventListener('input', (event) => {
+    currentLightness = parseInt(event.target.value);
+    lightnessValue.textContent = `${currentLightness}%`;
+    updateUI();
 });
 
 function setHarmony(type) {
