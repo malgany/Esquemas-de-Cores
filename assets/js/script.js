@@ -24,11 +24,19 @@ const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)');
 function applyTheme(theme, persist = false) {
     const root = document.documentElement;
     const isDark = theme === 'dark';
-    root.classList.toggle('dark', isDark);
+
+    // Remove a classe dark primeiro
+    if (isDark) {
+        root.classList.add('dark');
+    } else {
+        root.classList.remove('dark');
+    }
+
+    console.log('Tema aplicado:', theme, '| Classe dark presente:', root.classList.contains('dark'));
 
     if (themeToggle) {
         themeToggle.setAttribute('aria-pressed', String(isDark));
-        themeToggle.setAttribute('title', isDark ? 'Modo claro' : 'Modo escuro');
+        themeToggle.setAttribute('title', isDark ? 'Alternar para tema claro' : 'Alternar para tema escuro');
     }
 
     if (persist) {
@@ -41,7 +49,9 @@ const initialTheme = storedTheme || (prefersDark?.matches ? 'dark' : 'light');
 applyTheme(initialTheme, Boolean(storedTheme));
 
 themeToggle?.addEventListener('click', () => {
-    const nextTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    console.log('Botão clicado | Tema atual:', currentTheme, '-> Próximo tema:', nextTheme);
     applyTheme(nextTheme, true);
 });
 
