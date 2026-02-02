@@ -172,11 +172,12 @@ function updateUI(fromInput = false) {
     colorsDisplay.innerHTML = '';
     config.offsets.forEach((offset, idx) => {
         const h = (currentHue + offset + 360) % 360;
-        const hex = `#${hslToHex(h, 90, 50)}`;
+        const hexWithoutHash = hslToHex(h, 90, 50);
+        const hex = `#${hexWithoutHash}`;
 
         const card = document.createElement('div');
         card.className = 'color-card';
-        card.onclick = () => copyToClipboard(hex);
+        card.onclick = () => copyToClipboard(hexWithoutHash);
         card.innerHTML = `
             <div class="color-card__swatch" style="background-color: ${hex}"></div>
             <div class="color-card__meta">
