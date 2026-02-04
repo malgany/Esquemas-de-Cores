@@ -3,8 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>Harmonia de Cores Visual</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script>
+        (() => {
+            try {
+                const storedTheme = localStorage.getItem('ui-theme');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = storedTheme || (prefersDark ? 'dark' : 'light');
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.documentElement.dataset.theme = theme;
+            } catch (err) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.dataset.theme = 'light';
+            }
+        })();
+    </script>
     <script>
         tailwind.config = {
             darkMode: 'class'
@@ -108,5 +123,4 @@
     <script src="assets/js/script.js" defer></script>
 </body>
 </html>
-
 

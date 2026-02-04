@@ -12,6 +12,13 @@ const lightnessValue = document.getElementById('lightnessValue');
 let currentHue = 0;
 let currentHarmony = 'complementary';
 let currentLightness = 50;
+let themeTokens = {
+    canvasCenter: '#ffffff',
+    canvasLine: '#0f172a',
+    canvasDot: '#ffffff',
+    toastBg: '#0f172a',
+    toastText: '#ffffff'
+};
 
 const harmonyConfig = {
     complementary: { name: 'Complementares', offsets: [0, 180], type: 'line' },
@@ -24,18 +31,49 @@ const harmonyConfig = {
 
 const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)');
 
+function getStoredTheme() {
+    try {
+        return localStorage.getItem('ui-theme');
+    } catch (err) {
+        return null;
+    }
+}
+
+function setStoredTheme(theme) {
+    try {
+        localStorage.setItem('ui-theme', theme);
+    } catch (err) {
+        // Ignore storage errors (private mode or blocked storage).
+    }
+}
+
+function readThemeTokens() {
+    const styles = getComputedStyle(document.documentElement);
+    const read = (token, fallback) => {
+        const value = styles.getPropertyValue(token).trim();
+        return value || fallback;
+    };
+
+    themeTokens = {
+        canvasCenter: read('--canvas-center', '#ffffff'),
+        canvasLine: read('--canvas-line', '#0f172a'),
+        canvasDot: read('--canvas-dot', '#ffffff'),
+        toastBg: read('--toast-bg', '#0f172a'),
+        toastText: read('--toast-text', '#ffffff')
+    };
+}
+
 function applyTheme(theme, persist = false) {
     const root = document.documentElement;
     const isDark = theme === 'dark';
 
-    // Remove a classe dark primeiro
     if (isDark) {
         root.classList.add('dark');
     } else {
         root.classList.remove('dark');
     }
 
-    console.log('Tema aplicado:', theme, '| Classe dark presente:', root.classList.contains('dark'));
+    root.dataset.theme = theme;
 
     if (themeToggle) {
         themeToggle.setAttribute('aria-pressed', String(isDark));
@@ -43,23 +81,25 @@ function applyTheme(theme, persist = false) {
     }
 
     if (persist) {
-        localStorage.setItem('ui-theme', theme);
+        setStoredTheme(theme);
     }
+
+    readThemeTokens();
+    drawApp();
 }
 
-const storedTheme = localStorage.getItem('ui-theme');
+const storedTheme = getStoredTheme();
 const initialTheme = storedTheme || (prefersDark?.matches ? 'dark' : 'light');
 applyTheme(initialTheme, Boolean(storedTheme));
 
 themeToggle?.addEventListener('click', () => {
     const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    console.log('Botão clicado | Tema atual:', currentTheme, '-> Próximo tema:', nextTheme);
     applyTheme(nextTheme, true);
 });
 
 prefersDark?.addEventListener('change', (event) => {
-    if (!localStorage.getItem('ui-theme')) {
+    if (!getStoredTheme()) {
         applyTheme(event.matches ? 'dark' : 'light');
     }
 });
@@ -84,7 +124,7 @@ function drawApp() {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = themeTokens.canvasCenter;
     ctx.fill();
 
     const config = harmonyConfig[currentHarmony];
@@ -99,7 +139,7 @@ function drawApp() {
     });
 
     ctx.beginPath();
-    ctx.strokeStyle = '#000';
+    ctx.strokeStyle = themeTokens.canvasLine;
     ctx.lineWidth = 6;
     ctx.lineJoin = 'round';
     if (config.type === 'line') {
@@ -117,14 +157,14 @@ function drawApp() {
     points.forEach((p, index) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = themeTokens.canvasDot;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(p.x, p.y, index === 0 ? 11 : 9, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${p.hue}, 100%, ${currentLightness}%)`;
         ctx.fill();
         if (index === 0) {
-            ctx.strokeStyle = '#000';
+            ctx.strokeStyle = themeTokens.canvasLine;
             ctx.lineWidth = 2;
             ctx.stroke();
         }
@@ -261,11 +301,12 @@ function copyToClipboard(text) {
     document.body.removeChild(el);
 
     const toast = document.createElement('div');
-    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold';
+    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold';
+    toast.style.backgroundColor = themeTokens.toastBg;
+    toast.style.color = themeTokens.toastText;
     toast.innerText = `Copiado: ${text}`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 1500);
 }
 
 window.onload = updateUI;
-

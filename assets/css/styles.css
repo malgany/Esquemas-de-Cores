@@ -21,6 +21,11 @@ body {
     --btn-active-bg: #0f172a;
     --btn-active-text: #ffffff;
     --btn-active-border: #0f172a;
+    --canvas-center: #ffffff;
+    --canvas-line: #0f172a;
+    --canvas-dot: #ffffff;
+    --toast-bg: #0f172a;
+    --toast-text: #ffffff;
 }
 
 html.dark {
@@ -36,6 +41,11 @@ html.dark {
     --btn-active-bg: #e2e8f0;
     --btn-active-text: #0f172a;
     --btn-active-border: #e2e8f0;
+    --canvas-center: #0b1220;
+    --canvas-line: #e2e8f0;
+    --canvas-dot: #0b1220;
+    --toast-bg: #e2e8f0;
+    --toast-text: #0f172a;
 }
 
 .color-card {
