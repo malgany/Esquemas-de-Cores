@@ -12,6 +12,7 @@ const lightnessValue = document.getElementById('lightnessValue');
 let currentHue = 0;
 let currentHarmony = 'complementary';
 let currentLightness = 50;
+let lastCanvasState = null;
 let themeTokens = {
     canvasCenter: '#ffffff',
     canvasLine: '#0f172a',
@@ -116,9 +117,6 @@ prefersDark?.addEventListener('change', (event) => {
         applyTheme(event.matches ? 'dark' : 'light');
     }
 });
-
-let lastCanvasState = null;
-
 
 function drawApp() {
     const newState = `${currentHue}-${currentHarmony}-${currentLightness}-${themeTokens.canvasLine}`;
