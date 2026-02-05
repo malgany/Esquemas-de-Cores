@@ -9,11 +9,11 @@ const themeToggle = document.getElementById('themeToggle');
 const lightnessSlider = document.getElementById('lightnessSlider');
 const lightnessValue = document.getElementById('lightnessValue');
 
-let currentHue = 0;
-let currentHarmony = 'complementary';
-let currentLightness = 50;
-let lastCanvasState = null;
-let themeTokens = {
+var currentHue = 0;
+var currentHarmony = 'complementary';
+var currentLightness = 50;
+var lastCanvasState = null;
+var themeTokens = {
     canvasCenter: '#ffffff',
     canvasLine: '#0f172a',
     canvasDot: '#ffffff',
@@ -101,10 +101,6 @@ function applyTheme(theme, persist = false) {
     readThemeTokens();
     drawApp();
 }
-
-const storedTheme = getStoredTheme();
-const initialTheme = storedTheme || (prefersDark?.matches ? 'dark' : 'light');
-applyTheme(initialTheme, Boolean(storedTheme));
 
 themeToggle?.addEventListener('click', () => {
     const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -370,5 +366,12 @@ function showToast(message, isError = false) {
         setTimeout(() => toast.remove(), 300);
     }, 2000);
 }
+
+// Inicialização do tema
+(() => {
+    const storedTheme = getStoredTheme();
+    const initialTheme = storedTheme || (prefersDark?.matches ? 'dark' : 'light');
+    applyTheme(initialTheme, Boolean(storedTheme));
+})();
 
 window.onload = updateUI;
