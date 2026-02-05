@@ -29,6 +29,19 @@ const harmonyConfig = {
     square: { name: 'Quadrado', offsets: [0, 90, 180, 270], type: 'poly' }
 };
 
+// Utility: Debounce function para otimizar performance
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)');
 
 function getStoredTheme() {
@@ -104,7 +117,16 @@ prefersDark?.addEventListener('change', (event) => {
     }
 });
 
+let lastCanvasState = null;
+
+
 function drawApp() {
+    const newState = `${currentHue}-${currentHarmony}-${currentLightness}-${themeTokens.canvasLine}`;
+
+    // Otimização: evita re-draw desnecessário
+    if (lastCanvasState === newState) return;
+    lastCanvasState = newState;
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     const radius = canvas.width / 2 - 40;
@@ -244,19 +266,27 @@ function updateUI(fromInput = false) {
     drawApp();
 }
 
+const debouncedUpdateFromInput = debounce((inputValue) => {
+    currentHue = hexToHue(inputValue);
+    updateUI(true);
+}, 150);
+
 manualHexInput.addEventListener('input', (event) => {
     const inputValue = event.target.value.replace(/[^0-9A-Fa-f]/g, '');
     event.target.value = inputValue;
 
     if (inputValue.length === 3 || inputValue.length === 6) {
-        currentHue = hexToHue(inputValue);
-        updateUI(true);
+        debouncedUpdateFromInput(inputValue);
     }
 });
 
 lightnessSlider.addEventListener('input', (event) => {
     currentLightness = parseInt(event.target.value);
     lightnessValue.textContent = `${currentLightness}%`;
+
+    // Atualizar ARIA values para acessibilidade
+    lightnessSlider.setAttribute('aria-valuenow', currentLightness);
+
     updateUI();
 });
 
@@ -292,21 +322,55 @@ canvas.addEventListener('touchmove', (event) => {
     event.preventDefault();
 }, { passive: false });
 
-function copyToClipboard(text) {
-    const el = document.createElement('textarea');
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
+// Função moderna de copiar com fallback
+async function copyToClipboard(text) {
+    try {
+        // Tentar usar Clipboard API moderna
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            // Fallback para método antigo
+            const el = document.createElement('textarea');
+            el.value = text;
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
 
+        showToast(`✓ Copiado: ${text}`);
+    } catch (err) {
+        console.error('Erro ao copiar:', err);
+        showToast('✗ Erro ao copiar', true);
+    }
+}
+
+function showToast(message, isError = false) {
     const toast = document.createElement('div');
-    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold';
-    toast.style.backgroundColor = themeTokens.toastBg;
-    toast.style.color = themeTokens.toastText;
-    toast.innerText = `Copiado: ${text}`;
+    toast.className = 'fixed top-10 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl text-sm shadow-2xl z-50 font-bold transition-all';
+    toast.style.backgroundColor = isError ? '#ef4444' : themeTokens.toastBg;
+    toast.style.color = isError ? '#ffffff' : themeTokens.toastText;
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -10px)';
+    toast.innerText = message;
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 1500);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translate(-50%, 0)';
+    });
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translate(-50%, -10px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
 }
 
 window.onload = updateUI;

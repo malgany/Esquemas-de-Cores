@@ -1,10 +1,15 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
-    <title>Harmonia de Cores Visual</title>
+    <meta name="description"
+        content="Ferramenta interativa para criar esquemas de cores harmoniosos. Explore combinações complementares, análogas, triádicas e muito mais.">
+    <meta name="keywords" content="cores, paleta de cores, harmonia cromática, design, UI, UX">
+    <meta name="author" content="Esquemas de Cores">
+    <title>Esquemas de Cores - Gerador de Paletas Harmônicas</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script>
         (() => {
@@ -28,20 +33,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 font-sans transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
+<body
+    class="bg-slate-50 min-h-screen text-slate-800 font-sans transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
 
     <div class="max-w-5xl mx-auto px-4 py-10">
-        <header class="mb-10 relative">
+        <header class="mb-10 relative" role="banner">
             <div class="absolute right-0 top-0">
-                <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Alternar tema">
+                <button id="themeToggle" class="theme-toggle" aria-pressed="false"
+                    aria-label="Alternar entre tema claro e escuro" title="Alternar tema">
                     <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="4"></circle>
-                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                            <path
+                                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41">
+                            </path>
                         </svg>
                     </span>
                     <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
                         </svg>
                     </span>
@@ -49,78 +61,106 @@
                 </button>
             </div>
             <div class="text-center pt-6">
-                <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight dark:text-white">Esquemas de Cores</h1>
-                <p class="text-slate-500 max-w-lg mx-auto dark:text-slate-300">Escolha uma cor base ou digite o código HEX para ver as harmonias aplicadas.</p>
+                <h1 class="text-4xl font-black text-slate-900 mb-3 tracking-tight dark:text-white">Esquemas de Cores
+                </h1>
+                <p class="text-slate-500 max-w-lg mx-auto dark:text-slate-300">Escolha uma cor base ou digite o código
+                    HEX para ver as harmonias aplicadas.</p>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div class="lg:col-span-5 bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col items-center dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl">
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" role="main">
+            <section
+                class="lg:col-span-5 bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 flex flex-col items-center dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl"
+                aria-label="Controles de seleção de cores">
                 <div class="wheel-container mb-6">
-                    <canvas id="colorWheel" width="800" height="800" class="w-full h-full shadow-inner"></canvas>
+                    <canvas id="colorWheel" width="800" height="800" class="w-full h-full shadow-inner" role="img"
+                        aria-label="Roda de cores interativa para seleção de matiz"></canvas>
                 </div>
 
                 <div class="w-full mb-8">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block ml-1 dark:text-slate-300">Cor Base (Manual)</label>
-                    <div class="flex items-center bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 hex-input-focus transition-all dark:bg-slate-900 dark:border-slate-800">
-                        <span class="text-slate-400 font-mono font-bold mr-2 dark:text-slate-300">#</span>
+                    <label for="manualHexInput"
+                        class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block ml-1 dark:text-slate-300">Cor
+                        Base (Manual)</label>
+                    <div
+                        class="flex items-center bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 py-3 hex-input-focus transition-all dark:bg-slate-900 dark:border-slate-800">
+                        <span class="text-slate-400 font-mono font-bold mr-2 dark:text-slate-300"
+                            aria-hidden="true">#</span>
                         <input type="text" id="manualHexInput" maxlength="6" placeholder="FFFFFF"
-                               class="bg-transparent border-none outline-none w-full font-mono font-black text-slate-700 uppercase tracking-widest dark:text-slate-100">
-                        <div id="inputColorPreview" class="w-6 h-6 rounded-lg shadow-sm border border-slate-200 ml-2 dark:border-slate-700"></div>
+                            aria-describedby="hexHelpText"
+                            class="bg-transparent border-none outline-none w-full font-mono font-black text-slate-700 uppercase tracking-widest dark:text-slate-100">
+                        <div id="inputColorPreview"
+                            class="w-6 h-6 rounded-lg shadow-sm border border-slate-200 ml-2 dark:border-slate-700"
+                            role="img" aria-label="Visualização da cor inserida"></div>
                     </div>
                 </div>
 
                 <div class="w-full">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1 dark:text-slate-300">Tipo de Combinação</h3>
-                    <div class="grid grid-cols-2 gap-3" id="harmonySelectors">
-                        <button onclick="setHarmony('complementary')" data-type="complementary" class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold">Complementar</button>
-                        <button onclick="setHarmony('analogous')" data-type="analogous" class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold">Análogas</button>
-                        <button onclick="setHarmony('triadic')" data-type="triadic" class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold">Triangulação</button>
-                        <button onclick="setHarmony('splitComplementary')" data-type="splitComplementary" class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold">Meio-Compl.</button>
-                        <button onclick="setHarmony('tetradic')" data-type="tetradic" class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold">Retângulo</button>
-                        <button onclick="setHarmony('square')" data-type="square" class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold">Quadrado</button>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1 dark:text-slate-300"
+                        id="harmonyTypeLabel">Tipo de Combinação</h3>
+                    <div class="grid grid-cols-2 gap-3" id="harmonySelectors" role="group"
+                        aria-labelledby="harmonyTypeLabel">
+                        <button onclick="setHarmony('complementary')" data-type="complementary"
+                            class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold"
+                            aria-label="Esquema complementar - cores opostas na roda">Complementar</button>
+                        <button onclick="setHarmony('analogous')" data-type="analogous"
+                            class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold"
+                            aria-label="Esquema análogo - cores adjacentes">Análogas</button>
+                        <button onclick="setHarmony('triadic')" data-type="triadic"
+                            class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold"
+                            aria-label="Esquema triádico - três cores equidistantes">Triangulação</button>
+                        <button onclick="setHarmony('splitComplementary')" data-type="splitComplementary"
+                            class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold"
+                            aria-label="Esquema complementar dividido">Meio-Compl.</button>
+                        <button onclick="setHarmony('tetradic')" data-type="tetradic"
+                            class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold"
+                            aria-label="Esquema tetrádico retangular">Retângulo</button>
+                        <button onclick="setHarmony('square')" data-type="square"
+                            class="harmony-btn p-3 text-sm border-2 rounded-2xl hover:border-indigo-200 font-bold"
+                            aria-label="Esquema quadrado - quatro cores equidistantes">Quadrado</button>
                     </div>
                 </div>
 
                 <div class="w-full mt-6">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1 dark:text-slate-300">Luminosidade</h3>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 ml-1 dark:text-slate-300"
+                        id="lightnessLabel">Luminosidade</h3>
                     <div class="flex items-center gap-4">
-                        <span class="text-xs text-slate-400 dark:text-slate-300">Escuro</span>
-                        <input 
-                            type="range" 
-                            id="lightnessSlider" 
-                            min="20" 
-                            max="80" 
-                            value="50" 
-                            class="flex-1 lightness-slider"
-                        />
-                        <span class="text-xs text-slate-400 dark:text-slate-300">Claro</span>
+                        <span class="text-xs text-slate-400 dark:text-slate-300" aria-hidden="true">Escuro</span>
+                        <input type="range" id="lightnessSlider" min="20" max="80" value="50"
+                            class="flex-1 lightness-slider" aria-labelledby="lightnessLabel" aria-valuemin="20"
+                            aria-valuemax="80" aria-valuenow="50" />
+                        <span class="text-xs text-slate-400 dark:text-slate-300" aria-hidden="true">Claro</span>
                     </div>
                     <div class="text-center mt-2">
-                        <span id="lightnessValue" class="text-sm font-bold text-slate-600 dark:text-slate-200">50%</span>
+                        <span id="lightnessValue"
+                            class="text-sm font-bold text-slate-600 dark:text-slate-200">50%</span>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="lg:col-span-7 flex flex-col gap-6">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border border-slate-100 h-full dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl">
+            <section class="lg:col-span-7 flex flex-col gap-6" aria-label="Paleta de cores gerada">
+                <div
+                    class="bg-white p-8 rounded-[2.5rem] shadow-lg border border-slate-100 h-full dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl">
                     <div class="flex items-center justify-between mb-8">
                         <div>
-                            <h2 id="harmonyTitle" class="text-2xl font-black text-slate-900 capitalize dark:text-white">Complementares</h2>
+                            <h2 id="harmonyTitle" class="text-2xl font-black text-slate-900 capitalize dark:text-white">
+                                Complementares</h2>
                             <p class="text-slate-400 text-sm dark:text-slate-400">Harmonias sugeridas</p>
                         </div>
-                        <div id="baseColorBadge" class="w-12 h-12 rounded-2xl shadow-md border-4 border-white dark:border-slate-900"></div>
+                        <div id="baseColorBadge"
+                            class="w-12 h-12 rounded-2xl shadow-md border-4 border-white dark:border-slate-900"
+                            role="img" aria-label="Cor base selecionada"></div>
                     </div>
 
-                    <div id="colorsDisplay" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div id="colorsDisplay" class="grid grid-cols-1 sm:grid-cols-2 gap-4" role="list"
+                        aria-live="polite">
                         <!-- Cards de Cores -->
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
 
     <script src="assets/js/script.js" defer></script>
 </body>
-</html>
 
+</html>
