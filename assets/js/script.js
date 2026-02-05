@@ -13,6 +13,7 @@ var currentHue = 0;
 var currentHarmony = 'complementary';
 var currentLightness = 50;
 var lastCanvasState = null;
+var lastHarmony = null;
 var themeTokens = {
     canvasCenter: '#ffffff',
     canvasLine: '#0f172a',
@@ -238,23 +239,41 @@ function updateUI(fromInput = false) {
         btn.classList.toggle('is-active', btn.dataset.type === currentHarmony);
     });
 
-    colorsDisplay.innerHTML = '';
+    const hasHarmonyChanged = currentHarmony !== lastHarmony;
+
+    if (hasHarmonyChanged) {
+        colorsDisplay.innerHTML = '';
+        lastHarmony = currentHarmony;
+    }
+
     config.offsets.forEach((offset, idx) => {
         const h = (currentHue + offset + 360) % 360;
         const hexWithoutHash = hslToHex(h, 90, currentLightness);
         const hex = `#${hexWithoutHash}`;
 
-        const card = document.createElement('div');
-        card.className = 'color-card';
-        card.onclick = () => copyToClipboard(hexWithoutHash);
-        card.innerHTML = `
-            <div class="color-card__swatch" style="background-color: ${hex}"></div>
-            <div class="color-card__meta">
-                <div class="color-card__label">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
-                <div class="color-card__value">${hex}</div>
-            </div>
-        `;
-        colorsDisplay.appendChild(card);
+        if (hasHarmonyChanged) {
+            const card = document.createElement('div');
+            card.className = 'color-card';
+            card.onclick = () => copyToClipboard(hexWithoutHash);
+            card.innerHTML = `
+                <div class="color-card__swatch" style="background-color: ${hex}"></div>
+                <div class="color-card__meta">
+                    <div class="color-card__label">${idx === 0 ? 'Cor Base' : 'Harmônica'}</div>
+                    <div class="color-card__value">${hex}</div>
+                </div>
+            `;
+            colorsDisplay.appendChild(card);
+        } else {
+            const cards = colorsDisplay.querySelectorAll('.color-card');
+            if (cards[idx]) {
+                const swatch = cards[idx].querySelector('.color-card__swatch');
+                const valueText = cards[idx].querySelector('.color-card__value');
+                swatch.style.backgroundColor = hex;
+                valueText.innerText = hex;
+                // Atualizar o clique para o novo valor
+                cards[idx].onclick = () => copyToClipboard(hexWithoutHash);
+            }
+        }
     });
 
     drawApp();
